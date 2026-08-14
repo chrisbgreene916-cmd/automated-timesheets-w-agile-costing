@@ -27,36 +27,23 @@
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 
 <style>
-:root {
-    --bg: #68c7ff;
-    --surface: #7dcfff;
-    --surface2: #92d8ff;
-    --surface3: #a7e0ff;
-    --border: #4db8f5;
-    --border-strong: #35a8ee;
-    --text: #003c6b;
-    --text-muted: #1a5a8a;
-    --text-dim: #2e6e9e;
-    --pink: #F0B8CC;
-    --pink-light: #F8D0DF;
-    --pink-bg: #f5c8d8;
-    --pink-border: #ECA8C0;
-    --green: #3a9e6e;
-    --green-bg: #a8ddc0;
-    --green-border: #68c098;
-    --amber: #b07010;
-    --amber-bg: #f0d888;
-    --amber-border: #c89830;
-    --red: #c04040;
-    --red-bg: #f0a8a8;
-    --red-border: #c85858;
-    --purple: #7c5cbf;
-    --purple-bg: #d8ccf0;
-    --purple-border: #a890d8;
-    --mono: 'JetBrains Mono', monospace;
-    --sans: 'Poppins', sans-serif;
-    --radius: 8px;
-    --radius-lg: 14px;
+  /* ============================================================
+     DESIGN TOKENS — matched to the reference screenshot:
+     bright sky-blue background, dark navy text, coral-pink accent,
+     pale-blue cards with thin blue borders, pill-shaped tags.
+     ============================================================ */
+  :root{
+    --bg:         #52C2F0;   /* page background — bright sky blue */
+    --navy:       #133A5C;   /* headings + primary text */
+    --navy-soft:  #2C5578;   /* secondary / body text (navy, softened) */
+    --pink:       #FF93AC;   /* accent color — subtitle word, arrows, highlight pill */
+    --card-bg:    #DFF3FD;   /* card background — pale tinted blue */
+    --card-border:#AEE1F7;   /* card / pill borders */
+    --pill-bg:    #F4FBFF;   /* pill background — near white, blue tint */
+    --white:      #FFFFFF;
+    --good:       #2FAE6B;   /* success / posted state */
+    --radius-lg:  16px;
+    --radius-sm:  8px;
   }
 
   * { box-sizing: border-box; }
