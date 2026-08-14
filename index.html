@@ -7,43 +7,63 @@
 
 <!--
   ============================================================
-  WHAT CHANGED FROM V1
+  WHAT CHANGED FROM V2
   ============================================================
-  Same page structure and same "Run demo" animation logic as
-  before. The only thing that changed is the THEME: colors,
-  fonts, and component styling (cards, pills, list bullets, and
-  the demo window's title bar) now match the sky-blue / navy /
-  coral-pink reference screenshot you sent.
+  Same page shell (hero, "how it works" cards, sky-blue/navy/pink
+  theme). The demo panel itself is rebuilt: instead of abstract
+  boxes, it now shows small REALISTIC mockups of the three actual
+  tools in sequence:
 
-  All theme colors live in the :root block below — that's the
-  one place to tweak if a shade looks off.
+    1) A mini Jira kanban board (white background, purple epic
+       pills, card keys) — matches your Jira screenshot.
+    2) A mini Planview AgilePlace board (colored card-type bars,
+       swimlane headers) — matches your LeanKit screenshot.
+    3) A mini Planview timesheet/resource grid (grid lines, pink
+       filled duration cells) — matches your Planview grid screenshot.
+
+  The animation now tells the real story: 2 of Mary's Jira cards
+  are highlighted → TaskTop syncs them into AgilePlace → the
+  count of active cards becomes the divisor for her 8-hour day →
+  the result posts as filled cells in the timesheet grid.
   ============================================================
 -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<!-- Fredoka: the rounded, bold display font used for the big title.
-     Inter: clean body text font.
-     IBM Plex Mono: the monospace font used on pills, tags, and code labels. -->
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 
 <style>
   /* ============================================================
-     DESIGN TOKENS — matched to the reference screenshot:
-     bright sky-blue background, dark navy text, coral-pink accent,
-     pale-blue cards with thin blue borders, pill-shaped tags.
+     PAGE THEME TOKENS (unchanged from v2 — sky blue / navy / pink)
      ============================================================ */
   :root{
-    --bg:         #52C2F0;   /* page background — bright sky blue */
-    --navy:       #133A5C;   /* headings + primary text */
-    --navy-soft:  #2C5578;   /* secondary / body text (navy, softened) */
-    --pink:       #FF93AC;   /* accent color — subtitle word, arrows, highlight pill */
-    --card-bg:    #DFF3FD;   /* card background — pale tinted blue */
-    --card-border:#AEE1F7;   /* card / pill borders */
-    --pill-bg:    #F4FBFF;   /* pill background — near white, blue tint */
+    --bg:         #52C2F0;
+    --navy:       #133A5C;
+    --navy-soft:  #2C5578;
+    --pink:       #FF93AC;
+    --card-bg:    #DFF3FD;
+    --card-border:#AEE1F7;
+    --pill-bg:    #F4FBFF;
     --white:      #FFFFFF;
-    --good:       #2FAE6B;   /* success / posted state */
+    --good:       #2FAE6B;
     --radius-lg:  16px;
     --radius-sm:  8px;
+
+    /* ---- mockup-only colors: these imitate each real tool's own
+       palette, not the page theme, so the mini boards read as
+       "screenshots" rather than reskinned theme boxes. ---- */
+    --jira-purple:  #6554C0;
+    --jira-blue:    #0052CC;
+    --jira-border:  #DFE1E6;
+    --jira-grey:    #F4F5F7;
+    --lk-navy:      #14233C;
+    --lk-teal:      #2E8AA6;
+    --lk-yellow:    #E8B830;
+    --lk-green:     #4FA37C;
+    --lk-lane:      #ECEFF3;
+    --pv-grid:      #D8DCE1;
+    --pv-red:       #E98A8A;
+    --pv-blue:      #A9C6E8;
+    --highlight:    #FFE38A; /* the glow used to mark "Mary's" cards as they get selected */
   }
 
   * { box-sizing: border-box; }
@@ -58,174 +78,179 @@
   }
 
   h1,h2,h3{ margin:0 0 .3em 0; }
-  .mono{ font-family:'IBM Plex Mono', monospace; }
+  .mono{ font-family:'Poppins', monospace; }
 
-  .wrap{ max-width: 1040px; margin: 0 auto; padding: 0 28px; }
+  .wrap{ max-width: 1100px; margin: 0 auto; padding: 0 28px; }
 
-  /* ---------- Hero header ---------- */
   h1.title{
-    font-family:'Fredoka', sans-serif; font-weight:700;
+    font-family:'Poppins', sans-serif; font-weight:700;
     font-size: clamp(34px, 5.2vw, 52px); line-height:1.05;
     margin-top:44px; color: var(--navy);
   }
   h1.title .accent{ display:block; color: var(--pink); }
-
   .subtitle{ color: var(--navy-soft); font-size:16.5px; max-width: 680px; margin-top:18px; font-weight:500; }
 
-  /* Pills row — pale/white background, navy text, thin blue border, mono font */
   .pills{ display:flex; flex-wrap:wrap; gap:10px; margin-top:26px; }
   .pill{
-    font-family:'IBM Plex Mono', monospace; font-size:12.5px; font-weight:600;
+    font-family:'Poppins', monospace; font-size:12.5px; font-weight:600;
     border:1.5px solid var(--card-border); color: var(--navy);
     border-radius:999px; padding:7px 14px; background: var(--pill-bg);
   }
-  .pill .ico{ margin-right:6px; }
 
-  /* ---------- Two-column "how it works / tech stack" section ---------- */
   .grid2{ display:grid; grid-template-columns: 1fr 1fr; gap:22px; margin-top:52px; }
   @media (max-width: 760px){ .grid2{ grid-template-columns: 1fr; } }
-
-  .card{
-    background: var(--card-bg); border:1.5px solid var(--card-border);
-    border-radius: var(--radius-lg); padding:26px 28px;
-  }
+  .card{ background: var(--card-bg); border:1.5px solid var(--card-border); border-radius: var(--radius-lg); padding:26px 28px; }
   .card h3{ font-family:'Fredoka', sans-serif; font-size:17px; font-weight:600; color: var(--navy); }
   .card ul{ list-style:none; margin:16px 0 0 0; padding:0; }
-  .card li{
-    margin-bottom:14px; font-size:14.5px; color: var(--navy-soft);
-    display:flex; gap:10px; align-items:flex-start;
-  }
+  .card li{ margin-bottom:14px; font-size:14.5px; color: var(--navy-soft); display:flex; gap:10px; align-items:flex-start; }
   .card li::before{ content:'→'; color: var(--pink); font-weight:700; flex:none; }
   .card li b{ color: var(--navy); }
-
-  /* small pills used inside the tech-stack card */
-  .card .pill{ font-size:12px; padding:6px 12px; }
   .stack-pills{ display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+  .card .pill{ font-size:12px; padding:6px 12px; }
 
-  /* ---------- Demo section ---------- */
   .demo-section{ margin-top:60px; }
-  .demo-label{ font-family:'IBM Plex Mono', monospace; font-size:12.5px; color: var(--navy-soft); }
-
-  .btn{
-    font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600;
-    border-radius:999px; padding:11px 20px; cursor:pointer; border:1.5px solid transparent;
-    transition: transform .12s ease, opacity .12s ease;
-  }
+  .demo-label{ font-family:'Poppins', monospace; font-size:12.5px; color: var(--navy-soft); }
+  .btn{ font-family:'Poppins', monospace; font-size:13px; font-weight:600; border-radius:999px; padding:11px 20px; cursor:pointer; border:1.5px solid transparent; transition: transform .12s ease, opacity .12s ease; }
   .btn:active{ transform: scale(0.97); }
   .btn-primary{ background: var(--pink); color:#5C1626; }
   .btn-ghost{ background: var(--pill-bg); color: var(--navy); border-color: var(--card-border); margin-left:8px; }
   .btn:disabled{ opacity:.45; cursor:not-allowed; }
 
-  /* The demo "window" — styled like a little app window with a title bar,
-     matching the traffic-light-dot terminal bar in the reference shot. */
-  .window{
-    margin-top:20px; background: var(--card-bg);
-    border:1.5px solid var(--card-border); border-radius: var(--radius-lg);
-    overflow:hidden;
-  }
-  .titlebar{
-    display:flex; align-items:center; gap:10px;
-    background: var(--pill-bg); border-bottom:1.5px solid var(--card-border);
-    padding:12px 16px;
-  }
+  .window{ margin-top:20px; background: var(--card-bg); border:1.5px solid var(--card-border); border-radius: var(--radius-lg); overflow:hidden; }
+  .titlebar{ display:flex; align-items:center; gap:10px; background: var(--pill-bg); border-bottom:1.5px solid var(--card-border); padding:12px 16px; }
   .dots{ display:flex; gap:6px; }
   .dots span{ width:10px; height:10px; border-radius:50%; display:block; }
   .dots .d1{ background:#FF8A8A; } .dots .d2{ background:#FFD778; } .dots .d3{ background:#7BE0A6; }
-  .titlebar .name{ font-family:'IBM Plex Mono', monospace; font-size:12.5px; color: var(--navy-soft); }
-  .titlebar .live{
-    margin-left:auto; font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:600;
-    background: var(--pink); color:#5C1626; padding:4px 12px; border-radius:999px;
+  .titlebar .name{ font-family:'Poppins', monospace; font-size:12.5px; color: var(--navy-soft); }
+  .titlebar .live{ margin-left:auto; font-family:'Poppins', monospace; font-size:11px; font-weight:600; background: var(--pink); color:#5C1626; padding:4px 12px; border-radius:999px; }
+
+  .stage{ padding:22px; }
+
+  /* ============================================================
+     STAGE LABEL — small caption above each mockup, tells you
+     which real tool that mockup is imitating.
+     ============================================================ */
+  .stage-caption{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+  .stage-caption .tool{ font-family:'Poppins', monospace; font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color: var(--navy-soft); }
+  .stage-caption .step{ font-family:'Poppins', monospace; font-size:10.5px; color: var(--navy-soft); opacity:.7; }
+
+  /* Fade/slide wrapper for each stage block */
+  .stage-block{ opacity:0; transform: translateY(8px); transition: all .4s ease; margin-bottom:18px; }
+  .stage-block.show{ opacity:1; transform:none; }
+
+  /* connecting arrow between stacked stage blocks */
+  .flow-arrow{ display:flex; justify-content:center; margin: -6px 0 6px 0; opacity:0; transition: opacity .3s ease; }
+  .flow-arrow.show{ opacity:1; }
+  .flow-arrow .lbl{ font-family:'Poppins', monospace; font-size:10.5px; font-weight:600; color: var(--pink); background: var(--pill-bg); border:1.5px solid var(--card-border); padding:3px 12px; border-radius:999px; }
+
+  /* ============================================================
+     MOCKUP 1 — mini Jira board
+     ============================================================ */
+  .jira-mock{ background: var(--white); border:1px solid var(--jira-border); border-radius:10px; padding:16px; box-shadow: 0 1px 0 rgba(20,40,60,0.04); }
+  .jira-crumb{ font-size:11px; color:#5E6C84; margin-bottom:2px; }
+  .jira-title{ font-family:'Inter',sans-serif; font-weight:700; font-size:18px; color:#172B4D; }
+  .jira-cols{ display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-top:14px; }
+  .jira-col-head{ font-size:11px; font-weight:700; color:#5E6C84; letter-spacing:.03em; margin-bottom:8px; }
+  .jira-card{
+    background: var(--white); border:1px solid var(--jira-border); border-radius:6px;
+    padding:9px 10px; margin-bottom:8px; font-size:12px; color:#172B4D;
+    transition: box-shadow .3s ease, border-color .3s ease, transform .3s ease;
   }
+  .jira-card.dim{ opacity:.4; }
+  .jira-card.marys{ border-color: var(--jira-purple); }
+  .jira-card.marys.picked{ box-shadow: 0 0 0 3px var(--highlight); transform: translateY(-2px); }
+  .jira-epic{ display:inline-block; font-size:9.5px; font-weight:700; color:#fff; background: var(--jira-purple); border-radius:3px; padding:2px 6px; margin-bottom:6px; }
+  .jira-key{ font-size:10.5px; color:#5E6C84; margin-top:6px; display:flex; align-items:center; justify-content:space-between; }
+  .jira-av{ width:16px; height:16px; border-radius:50%; background: var(--jira-blue); display:inline-block; }
 
-  .stage{ padding:24px; }
-
-  .sync-row{ display:grid; grid-template-columns: 1fr 90px 1fr; align-items:stretch; gap:0; }
-  @media (max-width:720px){ .sync-row{ grid-template-columns:1fr; } .sync-arrow{ transform:rotate(90deg); margin:16px auto; } }
-
-  .board{
-    border:1.5px solid var(--card-border); border-radius: var(--radius-sm); background: var(--white);
-    padding:16px;
+  /* ============================================================
+     MOCKUP 2 — mini Planview AgilePlace board
+     ============================================================ */
+  .lk-mock{ background: var(--lk-lane); border:1px solid #C9D2DC; border-radius:10px; overflow:hidden; }
+  .lk-topbar{ background: var(--lk-navy); color:#fff; font-size:11px; font-weight:600; padding:8px 12px; display:flex; align-items:center; gap:8px; }
+  .lk-topbar .tag{ background:#2A3F5F; padding:2px 8px; border-radius:4px; font-size:10px; }
+  .lk-lanehead{ background:#DDE3EB; font-size:10.5px; font-weight:700; color:#3B4B63; letter-spacing:.04em; padding:6px 12px; }
+  .lk-cols{ display:grid; grid-template-columns: repeat(2, 1fr); gap:10px; padding:12px; }
+  .lk-card{
+    background:#fff; border:1px solid #C9D2DC; border-radius:5px; overflow:hidden; margin-bottom:8px;
+    font-size:11.5px; color:#233; transition: box-shadow .3s ease, transform .3s ease;
   }
-  .board-label{ font-family:'IBM Plex Mono', monospace; font-size:11.5px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; margin-bottom:12px; color: var(--navy-soft); }
+  .lk-card.dim{ opacity:.4; }
+  .lk-card.picked{ box-shadow: 0 0 0 3px var(--highlight); transform: translateY(-2px); }
+  .lk-card .bar{ height:5px; }
+  .lk-card .bar.teal{ background: var(--lk-teal); }
+  .lk-card .bar.yellow{ background: var(--lk-yellow); }
+  .lk-card .body{ padding:7px 9px; }
+  .lk-card .type{ font-size:9px; font-weight:700; color:#5B6B82; text-transform:uppercase; }
+  .lk-card .foot{ display:flex; align-items:center; justify-content:space-between; margin-top:5px; }
+  .lk-av{ width:14px; height:14px; border-radius:50%; background: var(--lk-teal); }
 
-  .sync-arrow{ display:flex; align-items:center; justify-content:center; flex-direction:column; gap:6px; }
-  .sync-arrow svg{ opacity:.35; transition: opacity .3s ease; }
-  .sync-arrow.active svg{ opacity:1; }
-  .sync-arrow .lbl{ font-family:'IBM Plex Mono', monospace; font-size:9.5px; color: var(--pink); font-weight:600; opacity:0; transition:opacity .3s ease; text-align:center; }
-  .sync-arrow.active .lbl{ opacity:1; }
-
-  .hier{ font-size:13px; }
-  .hier .lvl1, .hier .lvl2, .hier .lvl3{ opacity:0; transform: translateY(6px); transition: all .35s ease; margin-bottom:8px; }
-  .hier .show{ opacity:1; transform:none; }
-  .lvl1{ font-weight:700; color: var(--navy); }
-  .lvl2{ margin-left:14px; color: var(--navy-soft); }
-  .lvl3{
-    margin-left:28px; display:flex; align-items:center; gap:8px;
-    background: var(--pill-bg); border:1.5px solid var(--card-border); border-radius:var(--radius-sm); padding:6px 10px;
+  /* ============================================================
+     ALLOCATION CALCULATION STRIP
+     ============================================================ */
+  .calc-strip{
+    background: var(--white); border:1.5px solid var(--card-border); border-radius: var(--radius-sm);
+    padding:16px 18px; display:flex; align-items:center; gap:18px; flex-wrap:wrap;
   }
-  .dot{ width:7px; height:7px; border-radius:50%; flex:none; background: var(--pink); }
-  .assignee{ margin-left:auto; color: var(--navy-soft); font-size:11.5px; }
+  .calc-piece{ text-align:center; }
+  .calc-piece .num{ font-family:'Poppins', monospace; font-size:22px; font-weight:600; color: var(--navy); }
+  .calc-piece .lbl{ font-family:'Poppins', monospace; font-size:10px; color: var(--navy-soft); text-transform:uppercase; letter-spacing:.04em; }
+  .calc-op{ font-family:'Poppins', monospace; font-size:20px; color: var(--pink); font-weight:700; }
+  .calc-result{ margin-left:auto; display:flex; gap:14px; }
+  .calc-result .rbox{ background: var(--pill-bg); border:1.5px solid var(--card-border); border-radius:var(--radius-sm); padding:8px 14px; text-align:center; opacity:0; transition: opacity .4s ease; }
+  .calc-result .rbox.show{ opacity:1; }
+  .calc-result .rbox .p{ font-size:11px; font-weight:700; color: var(--navy); }
+  .calc-result .rbox .h{ font-family:'Poppins', monospace; font-size:16px; color: var(--pink); font-weight:700; }
 
-  .alloc{
-    margin-top:22px; border-top:1.5px dashed var(--card-border); padding-top:20px;
-    opacity:0; transition: opacity .4s ease;
+  /* ============================================================
+     MOCKUP 3 — mini Planview timesheet / resource grid
+     ============================================================ */
+  .pv-mock{ background:#fff; border:1px solid var(--pv-grid); border-radius:10px; overflow:hidden; }
+  .pv-headrow{ display:grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; background:#F6F7F9; border-bottom:1px solid var(--pv-grid); }
+  .pv-headrow div{ font-size:10.5px; font-weight:700; color:#4A5568; padding:7px 10px; border-right:1px solid var(--pv-grid); }
+  .pv-row{ display:grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; border-bottom:1px solid var(--pv-grid); font-size:12px; }
+  .pv-row div{ padding:9px 10px; border-right:1px solid var(--pv-grid); display:flex; align-items:center; color:#233; }
+  .pv-row .cell-fill{ background: var(--pv-red); color:#5C1010; font-family:'Poppins', monospace; font-weight:700; justify-content:center; opacity:0; transition: opacity .5s ease; }
+  .pv-row .cell-fill.show{ opacity:1; }
+  .pv-status{ font-size:10.5px; background:#E7F6EE; color:#1E7A4C; border-radius:4px; padding:2px 7px; }
+
+  footer{ margin-top:56px; text-align:center; color: var(--navy-soft); font-size:12px; font-family:'Poppins', monospace; }
+
+  @media (max-width:680px){
+    .jira-cols{ grid-template-columns: 1fr; }
+    .lk-cols{ grid-template-columns: 1fr; }
+    .pv-headrow, .pv-row{ grid-template-columns: 1.2fr 1fr 1fr; }
+    .pv-headrow div:last-child, .pv-row div:last-child{ display:none; }
   }
-  .alloc.show{ opacity:1; }
-  .alloc-title{ font-family:'IBM Plex Mono', monospace; font-size:11.5px; color: var(--navy-soft); text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px; font-weight:600; }
-  .alloc-bars{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
-  @media (max-width:720px){ .alloc-bars{ grid-template-columns:1fr; } }
-  .alloc-card{ background: var(--white); border:1.5px solid var(--card-border); border-radius:var(--radius-sm); padding:14px 16px; }
-  .alloc-card .proj{ font-size:13px; font-weight:700; color: var(--navy); }
-  .alloc-card .hrs{ font-family:'IBM Plex Mono', monospace; font-size:24px; color: var(--pink); margin-top:4px; font-weight:600; }
-  .bar-track{ height:6px; border-radius:99px; background: var(--card-bg); margin-top:10px; overflow:hidden; }
-  .bar-fill{ height:100%; width:0%; background: var(--pink); transition: width 1s ease; }
-
-  .output{ margin-top:24px; opacity:0; transition: opacity .4s ease; }
-  .output.show{ opacity:1; }
-  .output-head{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
-  .output-head .fname{ font-family:'IBM Plex Mono', monospace; font-size:12.5px; color: var(--navy-soft); }
-  .posted{ font-family:'IBM Plex Mono', monospace; font-size:11.5px; font-weight:600; color: var(--good); display:flex; align-items:center; gap:6px; opacity:0; transition:opacity .3s ease; }
-  .posted.show{ opacity:1; }
-
-  table{ width:100%; border-collapse:collapse; margin-top:12px; font-size:13.5px; background: var(--white); border-radius: var(--radius-sm); overflow:hidden; }
-  th,td{ text-align:left; padding:10px 12px; border-bottom:1px solid var(--card-border); }
-  th{ font-family:'IBM Plex Mono', monospace; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color: var(--navy-soft); font-weight:600; background: var(--pill-bg); }
-  td.num{ font-family:'IBM Plex Mono', monospace; }
-  tr.new-row{ opacity:0; transform: translateY(4px); transition: all .4s ease; }
-  tr.new-row.show{ opacity:1; transform:none; }
-
-  footer{ margin-top:56px; text-align:center; color: var(--navy-soft); font-size:12px; font-family:'IBM Plex Mono', monospace; }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <!-- ============ HERO / HEADER ============ -->
-  <h1 class="title">Timesheet sync<span class="accent">agent</span></h1>
+  <h1 class="title">Timesheet sync<span class="accent">integration</span></h1>
   <p class="subtitle">
-    An automation that logs Planview timesheet hours straight from Jira story status —
+    A TaskTop integration that logs Planview timesheet hours straight from Jira story status —
     no one has to remember to fill out a timesheet. TaskTop mirrors the Jira delivery
-    hierarchy into an equivalent Planview AgilePlace board, and every day's 8 hours per
-    person split proportionally across each open story's parent Program.
+    hierarchy into an equivalent Planview AgilePlace board, and a mapping rule splits every
+    day's 8 hours proportionally across each open card's parent Program.
   </p>
 
   <div class="pills">
-    <span class="pill"><span class="ico">🔁</span>TaskTop sync</span>
+    <span class="pill">🔁 TaskTop sync</span>
     <span class="pill">Jira hierarchy</span>
     <span class="pill">Planview AgilePlace</span>
     <span class="pill">Proportional allocation</span>
     <span class="pill">Auto timesheet post</span>
   </div>
 
-  <!-- ============ HOW IT WORKS / TECH STACK ============ -->
   <div class="grid2">
     <div class="card">
       <h3>How it works</h3>
       <ul>
         <li>Story, Epic, and Program cards are created and maintained in Jira as the normal source of truth.</li>
         <li>TaskTop mirrors the hierarchy into Planview in real time — a Jira <b>Program becomes a Planview Project</b>, and an <b>Epic becomes a Phase</b>.</li>
-        <li>Each day the agent reads which stories are open per assignee, and which Program/Phase they roll up to.</li>
-        <li><b>8 hours is split proportionally</b> across a person's open stories' parent Programs — 2 open stories under 2 Programs means 4 hrs logged to each.</li>
+        <li>Each day, TaskTop reads how many cards are open per assignee, and which Program/Phase each rolls up to.</li>
+        <li><b>8 hours is split evenly</b> across a person's open cards' parent Programs — 2 open cards under 2 Programs means 4 hrs logged to each.</li>
         <li>Hours post automatically to each assignee's Planview timesheet — no manual entry required.</li>
       </ul>
     </div>
@@ -250,8 +275,7 @@
 
   <!-- ============ INTERACTIVE DEMO ============ -->
   <div class="demo-section">
-    <p class="demo-label">// interactive demo — watch a day's timesheet log itself</p>
-
+    <p class="demo-label">// interactive demo — watch Mary's cards become a logged timesheet</p>
     <div style="margin-top:16px;">
       <button class="btn btn-primary" id="runBtn" onclick="runDemo()">Run demo</button>
       <button class="btn btn-ghost" id="resetBtn" onclick="resetDemo()">Restart</button>
@@ -260,84 +284,92 @@
     <div class="window">
       <div class="titlebar">
         <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
-        <div class="name">tasktop — timesheet sync agent</div>
+        <div class="name">tasktop — timesheet sync</div>
         <div class="live">Live simulation</div>
       </div>
 
       <div class="stage">
-        <div class="sync-row">
 
-          <!-- LEFT: Jira board -->
-          <div class="board">
-            <div class="board-label">Jira — source board</div>
-            <div class="hier" id="jiraHier">
-              <div class="lvl1" id="j-p1">Program: Falcon Initiative</div>
-              <div class="lvl2" id="j-e1">Epic: Mobile Checkout</div>
-              <div class="lvl3" id="j-s1"><span class="dot"></span> Story-4821 · In Progress <span class="assignee">Mary</span></div>
-
-              <div class="lvl1" id="j-p2" style="margin-top:14px;">Program: Osprey Rollout</div>
-              <div class="lvl2" id="j-e2">Epic: Data Migration</div>
-              <div class="lvl3" id="j-s2"><span class="dot"></span> Story-5190 · In Progress <span class="assignee">Mary</span></div>
-            </div>
-          </div>
-
-          <!-- MIDDLE: sync arrow -->
-          <div class="sync-arrow" id="syncArrow">
-            <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
-              <path d="M4 12h13M13 6l6 6-6 6" stroke="#FF93AC" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span class="lbl">TaskTop<br>syncing…</span>
-          </div>
-
-          <!-- RIGHT: Planview mirror board -->
-          <div class="board">
-            <div class="board-label">Planview AgilePlace — mirror</div>
-            <div class="hier" id="pvHier">
-              <div class="lvl1" id="p-p1">Project: Falcon Initiative</div>
-              <div class="lvl2" id="p-e1">Phase: Mobile Checkout</div>
-              <div class="lvl3" id="p-s1"><span class="dot"></span> Card-4821 · In Progress <span class="assignee">Mary</span></div>
-
-              <div class="lvl1" id="p-p2" style="margin-top:14px;">Project: Osprey Rollout</div>
-              <div class="lvl2" id="p-e2">Phase: Data Migration</div>
-              <div class="lvl3" id="p-s2"><span class="dot"></span> Card-5190 · In Progress <span class="assignee">Mary</span></div>
+        <!-- ============ STAGE 1: JIRA BOARD ============ -->
+        <div class="stage-block" id="stage1">
+          <div class="stage-caption"><span class="tool">Jira — team board</span><span class="step">1 · source of truth</span></div>
+          <div class="jira-mock">
+            <div class="jira-crumb">Projects / Delivery / Team Board</div>
+            <div class="jira-title">Sprint 24</div>
+            <div class="jira-cols">
+              <div>
+                <div class="jira-col-head">TO DO</div>
+                <div class="jira-card dim"><span class="jira-epic" style="background:#00875A">QUICK WINS</span><div>Content audit</div><div class="jira-key">JIRA-108 <span class="jira-av"></span></div></div>
+              </div>
+              <div>
+                <div class="jira-col-head">IN PROGRESS</div>
+                <div class="jira-card marys" id="jcard1"><span class="jira-epic">FALCON INITIATIVE</span><div>Mobile checkout flow</div><div class="jira-key">STORY-4821 <span class="jira-av"></span></div></div>
+                <div class="jira-card marys" id="jcard2"><span class="jira-epic">OSPREY ROLLOUT</span><div>Data migration script</div><div class="jira-key">STORY-5190 <span class="jira-av"></span></div></div>
+                <div class="jira-card dim"><span class="jira-epic" style="background:#0052CC">FY23 LAUNCH</span><div>Journey mapping workshop</div><div class="jira-key">JIRA-111 <span class="jira-av"></span></div></div>
+              </div>
+              <div>
+                <div class="jira-col-head">DONE</div>
+                <div class="jira-card dim"><span class="jira-epic" style="background:#00875A">QUICK WINS</span><div>Review banner ads</div><div class="jira-key">JIRA-120 <span class="jira-av"></span></div></div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Allocation math -->
-        <div class="alloc" id="allocBlock">
-          <div class="alloc-title">Daily allocation — Mary · 8.0 hrs capacity ÷ 2 open stories</div>
-          <div class="alloc-bars">
-            <div class="alloc-card">
-              <div class="proj">Falcon Initiative</div>
-              <div class="hrs" id="hrsA">0.0 hrs</div>
-              <div class="bar-track"><div class="bar-fill" id="barA"></div></div>
-            </div>
-            <div class="alloc-card">
-              <div class="proj">Osprey Rollout</div>
-              <div class="hrs" id="hrsB">0.0 hrs</div>
-              <div class="bar-track"><div class="bar-fill" id="barB"></div></div>
+        <div class="flow-arrow" id="arrow1"><span class="lbl">↓ TaskTop syncs Mary's 2 active cards</span></div>
+
+        <!-- ============ STAGE 2: PLANVIEW AGILEPLACE BOARD ============ -->
+        <div class="stage-block" id="stage2">
+          <div class="stage-caption"><span class="tool">Planview AgilePlace — mirrored board</span><span class="step">2 · Program → Project, Epic → Phase</span></div>
+          <div class="lk-mock">
+            <div class="lk-topbar">Team Kanban <span class="tag">Program Kanban</span></div>
+            <div class="lk-lanehead">IN PROCESS</div>
+            <div class="lk-cols">
+              <div>
+                <div class="lk-card" id="lkcard1">
+                  <div class="bar teal"></div>
+                  <div class="body">
+                    <div class="type">User Story</div>
+                    <div>Mobile checkout flow</div>
+                    <div class="foot"><span class="mono" style="font-size:10px;color:#5B6B82;">Falcon Initiative</span><span class="lk-av"></span></div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="lk-card" id="lkcard2">
+                  <div class="bar yellow"></div>
+                  <div class="body">
+                    <div class="type">User Story</div>
+                    <div>Data migration script</div>
+                    <div class="foot"><span class="mono" style="font-size:10px;color:#5B6B82;">Osprey Rollout</span><span class="lk-av"></span></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Output timesheet -->
-        <div class="output" id="outputBlock">
-          <div class="output-head">
-            <div class="fname mono">Planview timesheet — Mary — Aug 14, 2026</div>
-            <div class="posted" id="postedTag">✓ posted automatically</div>
+        <div class="flow-arrow" id="arrow2"><span class="lbl">↓ 8 hrs split evenly across Mary's 2 active cards → posts to timesheet</span></div>
+
+        <!-- ============ STAGE 3: PLANVIEW TIMESHEET GRID ============ -->
+        <div class="stage-block" id="stage4">
+          <div class="stage-caption"><span class="tool">Planview — Mary's timesheet</span><span class="step">3 · Aug 14, 2026 · posted</span></div>
+          <div class="pv-mock">
+            <div class="pv-headrow"><div>Project / Phase</div><div>Work status</div><div>Source card</div><div>Hours logged</div></div>
+            <div class="pv-row">
+              <div>Falcon Initiative — Mobile Checkout</div>
+              <div><span class="pv-status">Open / Active</span></div>
+              <div class="mono">STORY-4821</div>
+              <div class="cell-fill" id="pvcellA">4.00</div>
+            </div>
+            <div class="pv-row">
+              <div>Osprey Rollout — Data Migration</div>
+              <div><span class="pv-status">Open / Active</span></div>
+              <div class="mono">STORY-5190</div>
+              <div class="cell-fill" id="pvcellB">4.00</div>
+            </div>
           </div>
-          <table>
-            <thead>
-              <tr><th>Project</th><th>Phase</th><th>Source story</th><th>Hours</th></tr>
-            </thead>
-            <tbody>
-              <tr class="new-row" id="row1"><td>Falcon Initiative</td><td>Mobile Checkout</td><td class="mono">Story-4821</td><td class="num">4.0</td></tr>
-              <tr class="new-row" id="row2"><td>Osprey Rollout</td><td>Data Migration</td><td class="mono">Story-5190</td><td class="num">4.0</td></tr>
-              <tr class="new-row" id="rowT"><td><b>Total</b></td><td></td><td></td><td class="num"><b>8.0</b></td></tr>
-            </tbody>
-          </table>
         </div>
+
       </div>
     </div>
   </div>
@@ -347,11 +379,13 @@
 
 <script>
   /* ============================================================
-     DEMO ANIMATION LOGIC (unchanged from v1 — theme-only update)
+     DEMO ANIMATION LOGIC
      ------------------------------------------------------------
-     Reveals page elements one at a time by toggling a "show" CSS
-     class, with short pauses between steps so it reads as a live
-     sequence rather than everything appearing at once.
+     Runs through the 4 stages in order: reveal the Jira board and
+     highlight Mary's 2 cards, show the sync arrow, reveal the
+     AgilePlace mirror board and highlight the matching cards,
+     show the calculation strip filling in, then reveal the
+     timesheet grid with the posted hours.
      ============================================================ */
   function sleep(ms){ return new Promise(resolve => setTimeout(resolve, ms)); }
   function $(id){ return document.getElementById(id); }
@@ -359,55 +393,48 @@
   function hide(id){ $(id).classList.remove('show'); }
   const runBtn = () => $('runBtn');
 
+  const ALL_IDS = [
+    'stage1','arrow1','stage2','arrow2','stage4',
+    'jcard1','jcard2','lkcard1','lkcard2',
+    'pvcellA','pvcellB'
+  ];
+
   async function runDemo(){
     runBtn().disabled = true;
     resetDemo(false);
 
-    reveal('j-p1'); await sleep(250);
-    reveal('j-e1'); await sleep(200);
-    reveal('j-s1'); await sleep(350);
-    reveal('j-p2'); await sleep(250);
-    reveal('j-e2'); await sleep(200);
-    reveal('j-s2'); await sleep(500);
+    // STAGE 1 — Jira board appears, then Mary's 2 cards get highlighted
+    reveal('stage1');
+    await sleep(500);
+    $('jcard1').classList.add('picked'); await sleep(250);
+    $('jcard2').classList.add('picked'); await sleep(500);
 
-    $('syncArrow').classList.add('active');
-    await sleep(700);
+    // Sync arrow
+    reveal('arrow1'); await sleep(500);
 
-    reveal('p-p1'); await sleep(250);
-    reveal('p-e1'); await sleep(200);
-    reveal('p-s1'); await sleep(350);
-    reveal('p-p2'); await sleep(250);
-    reveal('p-e2'); await sleep(200);
-    reveal('p-s2'); await sleep(500);
+    // STAGE 2 — AgilePlace mirror board appears, mirrored cards highlight
+    reveal('stage2');
+    await sleep(400);
+    $('lkcard1').classList.add('picked'); await sleep(250);
+    $('lkcard2').classList.add('picked'); await sleep(500);
 
-    reveal('allocBlock');
-    await sleep(300);
-    $('hrsA').textContent = '4.0 hrs';
-    $('hrsB').textContent = '4.0 hrs';
-    $('barA').style.width = '50%';
-    $('barB').style.width = '50%';
-    await sleep(900);
+    reveal('arrow2'); await sleep(600);
 
-    reveal('outputBlock');
-    await sleep(300);
-    reveal('row1'); await sleep(250);
-    reveal('row2'); await sleep(250);
-    reveal('rowT'); await sleep(250);
-    reveal('postedTag');
+    // STAGE 3 — timesheet grid posts the hours
+    reveal('stage4');
+    await sleep(400);
+    reveal('pvcellA'); await sleep(250);
+    reveal('pvcellB');
 
     runBtn().disabled = false;
   }
 
   function resetDemo(reenable = true){
-    ['j-p1','j-e1','j-s1','j-p2','j-e2','j-s2',
-     'p-p1','p-e1','p-s1','p-p2','p-e2','p-s2',
-     'allocBlock','outputBlock','row1','row2','rowT','postedTag']
-      .forEach(hide);
-    $('syncArrow').classList.remove('active');
-    $('hrsA').textContent = '0.0 hrs';
-    $('hrsB').textContent = '0.0 hrs';
-    $('barA').style.width = '0%';
-    $('barB').style.width = '0%';
+    ALL_IDS.forEach(hide);
+    $('jcard1').classList.remove('picked');
+    $('jcard2').classList.remove('picked');
+    $('lkcard1').classList.remove('picked');
+    $('lkcard2').classList.remove('picked');
     if (reenable) runBtn().disabled = false;
   }
 </script>
