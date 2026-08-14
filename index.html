@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auto Timesheet Sync — Portfolio Demo</title>
+
+<!--
+  ============================================================
+  WHAT CHANGED FROM V1
+  ============================================================
+  Same page structure and same "Run demo" animation logic as
+  before. The only thing that changed is the THEME: colors,
+  fonts, and component styling (cards, pills, list bullets, and
+  the demo window's title bar) now match the sky-blue / navy /
+  coral-pink reference screenshot you sent.
+
+  All theme colors live in the :root block below — that's the
+  one place to tweak if a shade looks off.
+  ============================================================
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<!-- Fredoka: the rounded, bold display font used for the big title.
+     Inter: clean body text font.
+     IBM Plex Mono: the monospace font used on pills, tags, and code labels. -->
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --bg: #68c7ff;
+    --surface: #7dcfff;
+    --surface2: #92d8ff;
+    --surface3: #a7e0ff;
+    --border: #4db8f5;
+    --border-strong: #35a8ee;
+    --text: #003c6b;
+    --text-muted: #1a5a8a;
+    --text-dim: #2e6e9e;
+    --pink: #F0B8CC;
+    --pink-light: #F8D0DF;
+    --pink-bg: #f5c8d8;
+    --pink-border: #ECA8C0;
+    --green: #3a9e6e;
+    --green-bg: #a8ddc0;
+    --green-border: #68c098;
+    --amber: #b07010;
+    --amber-bg: #f0d888;
+    --amber-border: #c89830;
+    --red: #c04040;
+    --red-bg: #f0a8a8;
+    --red-border: #c85858;
+    --purple: #7c5cbf;
+    --purple-bg: #d8ccf0;
+    --purple-border: #a890d8;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Poppins', sans-serif;
+    --radius: 8px;
+    --radius-lg: 14px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--navy);
+    font-family: 'Inter', system-ui, sans-serif;
+    line-height:1.55;
+    padding: 0 0 80px 0;
+  }
+
+  h1,h2,h3{ margin:0 0 .3em 0; }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+
+  .wrap{ max-width: 1040px; margin: 0 auto; padding: 0 28px; }
+
+  /* ---------- Hero header ---------- */
+  h1.title{
+    font-family:'Fredoka', sans-serif; font-weight:700;
+    font-size: clamp(34px, 5.2vw, 52px); line-height:1.05;
+    margin-top:44px; color: var(--navy);
+  }
+  h1.title .accent{ display:block; color: var(--pink); }
+
+  .subtitle{ color: var(--navy-soft); font-size:16.5px; max-width: 680px; margin-top:18px; font-weight:500; }
+
+  /* Pills row — pale/white background, navy text, thin blue border, mono font */
+  .pills{ display:flex; flex-wrap:wrap; gap:10px; margin-top:26px; }
+  .pill{
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; font-weight:600;
+    border:1.5px solid var(--card-border); color: var(--navy);
+    border-radius:999px; padding:7px 14px; background: var(--pill-bg);
+  }
+  .pill .ico{ margin-right:6px; }
+
+  /* ---------- Two-column "how it works / tech stack" section ---------- */
+  .grid2{ display:grid; grid-template-columns: 1fr 1fr; gap:22px; margin-top:52px; }
+  @media (max-width: 760px){ .grid2{ grid-template-columns: 1fr; } }
+
+  .card{
+    background: var(--card-bg); border:1.5px solid var(--card-border);
+    border-radius: var(--radius-lg); padding:26px 28px;
+  }
+  .card h3{ font-family:'Fredoka', sans-serif; font-size:17px; font-weight:600; color: var(--navy); }
+  .card ul{ list-style:none; margin:16px 0 0 0; padding:0; }
+  .card li{
+    margin-bottom:14px; font-size:14.5px; color: var(--navy-soft);
+    display:flex; gap:10px; align-items:flex-start;
+  }
+  .card li::before{ content:'→'; color: var(--pink); font-weight:700; flex:none; }
+  .card li b{ color: var(--navy); }
+
+  /* small pills used inside the tech-stack card */
+  .card .pill{ font-size:12px; padding:6px 12px; }
+  .stack-pills{ display:flex; flex-wrap:wrap; gap:8px; margin-top:16px; }
+
+  /* ---------- Demo section ---------- */
+  .demo-section{ margin-top:60px; }
+  .demo-label{ font-family:'IBM Plex Mono', monospace; font-size:12.5px; color: var(--navy-soft); }
+
+  .btn{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:600;
+    border-radius:999px; padding:11px 20px; cursor:pointer; border:1.5px solid transparent;
+    transition: transform .12s ease, opacity .12s ease;
+  }
+  .btn:active{ transform: scale(0.97); }
+  .btn-primary{ background: var(--pink); color:#5C1626; }
+  .btn-ghost{ background: var(--pill-bg); color: var(--navy); border-color: var(--card-border); margin-left:8px; }
+  .btn:disabled{ opacity:.45; cursor:not-allowed; }
+
+  /* The demo "window" — styled like a little app window with a title bar,
+     matching the traffic-light-dot terminal bar in the reference shot. */
+  .window{
+    margin-top:20px; background: var(--card-bg);
+    border:1.5px solid var(--card-border); border-radius: var(--radius-lg);
+    overflow:hidden;
+  }
+  .titlebar{
+    display:flex; align-items:center; gap:10px;
+    background: var(--pill-bg); border-bottom:1.5px solid var(--card-border);
+    padding:12px 16px;
+  }
+  .dots{ display:flex; gap:6px; }
+  .dots span{ width:10px; height:10px; border-radius:50%; display:block; }
+  .dots .d1{ background:#FF8A8A; } .dots .d2{ background:#FFD778; } .dots .d3{ background:#7BE0A6; }
+  .titlebar .name{ font-family:'IBM Plex Mono', monospace; font-size:12.5px; color: var(--navy-soft); }
+  .titlebar .live{
+    margin-left:auto; font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:600;
+    background: var(--pink); color:#5C1626; padding:4px 12px; border-radius:999px;
+  }
+
+  .stage{ padding:24px; }
+
+  .sync-row{ display:grid; grid-template-columns: 1fr 90px 1fr; align-items:stretch; gap:0; }
+  @media (max-width:720px){ .sync-row{ grid-template-columns:1fr; } .sync-arrow{ transform:rotate(90deg); margin:16px auto; } }
+
+  .board{
+    border:1.5px solid var(--card-border); border-radius: var(--radius-sm); background: var(--white);
+    padding:16px;
+  }
+  .board-label{ font-family:'IBM Plex Mono', monospace; font-size:11.5px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; margin-bottom:12px; color: var(--navy-soft); }
+
+  .sync-arrow{ display:flex; align-items:center; justify-content:center; flex-direction:column; gap:6px; }
+  .sync-arrow svg{ opacity:.35; transition: opacity .3s ease; }
+  .sync-arrow.active svg{ opacity:1; }
+  .sync-arrow .lbl{ font-family:'IBM Plex Mono', monospace; font-size:9.5px; color: var(--pink); font-weight:600; opacity:0; transition:opacity .3s ease; text-align:center; }
+  .sync-arrow.active .lbl{ opacity:1; }
+
+  .hier{ font-size:13px; }
+  .hier .lvl1, .hier .lvl2, .hier .lvl3{ opacity:0; transform: translateY(6px); transition: all .35s ease; margin-bottom:8px; }
+  .hier .show{ opacity:1; transform:none; }
+  .lvl1{ font-weight:700; color: var(--navy); }
+  .lvl2{ margin-left:14px; color: var(--navy-soft); }
+  .lvl3{
+    margin-left:28px; display:flex; align-items:center; gap:8px;
+    background: var(--pill-bg); border:1.5px solid var(--card-border); border-radius:var(--radius-sm); padding:6px 10px;
+  }
+  .dot{ width:7px; height:7px; border-radius:50%; flex:none; background: var(--pink); }
+  .assignee{ margin-left:auto; color: var(--navy-soft); font-size:11.5px; }
+
+  .alloc{
+    margin-top:22px; border-top:1.5px dashed var(--card-border); padding-top:20px;
+    opacity:0; transition: opacity .4s ease;
+  }
+  .alloc.show{ opacity:1; }
+  .alloc-title{ font-family:'IBM Plex Mono', monospace; font-size:11.5px; color: var(--navy-soft); text-transform:uppercase; letter-spacing:.04em; margin-bottom:12px; font-weight:600; }
+  .alloc-bars{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  @media (max-width:720px){ .alloc-bars{ grid-template-columns:1fr; } }
+  .alloc-card{ background: var(--white); border:1.5px solid var(--card-border); border-radius:var(--radius-sm); padding:14px 16px; }
+  .alloc-card .proj{ font-size:13px; font-weight:700; color: var(--navy); }
+  .alloc-card .hrs{ font-family:'IBM Plex Mono', monospace; font-size:24px; color: var(--pink); margin-top:4px; font-weight:600; }
+  .bar-track{ height:6px; border-radius:99px; background: var(--card-bg); margin-top:10px; overflow:hidden; }
+  .bar-fill{ height:100%; width:0%; background: var(--pink); transition: width 1s ease; }
+
+  .output{ margin-top:24px; opacity:0; transition: opacity .4s ease; }
+  .output.show{ opacity:1; }
+  .output-head{ display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  .output-head .fname{ font-family:'IBM Plex Mono', monospace; font-size:12.5px; color: var(--navy-soft); }
+  .posted{ font-family:'IBM Plex Mono', monospace; font-size:11.5px; font-weight:600; color: var(--good); display:flex; align-items:center; gap:6px; opacity:0; transition:opacity .3s ease; }
+  .posted.show{ opacity:1; }
+
+  table{ width:100%; border-collapse:collapse; margin-top:12px; font-size:13.5px; background: var(--white); border-radius: var(--radius-sm); overflow:hidden; }
+  th,td{ text-align:left; padding:10px 12px; border-bottom:1px solid var(--card-border); }
+  th{ font-family:'IBM Plex Mono', monospace; font-size:11px; text-transform:uppercase; letter-spacing:.05em; color: var(--navy-soft); font-weight:600; background: var(--pill-bg); }
+  td.num{ font-family:'IBM Plex Mono', monospace; }
+  tr.new-row{ opacity:0; transform: translateY(4px); transition: all .4s ease; }
+  tr.new-row.show{ opacity:1; transform:none; }
+
+  footer{ margin-top:56px; text-align:center; color: var(--navy-soft); font-size:12px; font-family:'IBM Plex Mono', monospace; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ============ HERO / HEADER ============ -->
+  <h1 class="title">Timesheet sync<span class="accent">agent</span></h1>
+  <p class="subtitle">
+    An automation that logs Planview timesheet hours straight from Jira story status —
+    no one has to remember to fill out a timesheet. TaskTop mirrors the Jira delivery
+    hierarchy into an equivalent Planview AgilePlace board, and every day's 8 hours per
+    person split proportionally across each open story's parent Program.
+  </p>
+
+  <div class="pills">
+    <span class="pill"><span class="ico">🔁</span>TaskTop sync</span>
+    <span class="pill">Jira hierarchy</span>
+    <span class="pill">Planview AgilePlace</span>
+    <span class="pill">Proportional allocation</span>
+    <span class="pill">Auto timesheet post</span>
+  </div>
+
+  <!-- ============ HOW IT WORKS / TECH STACK ============ -->
+  <div class="grid2">
+    <div class="card">
+      <h3>How it works</h3>
+      <ul>
+        <li>Story, Epic, and Program cards are created and maintained in Jira as the normal source of truth.</li>
+        <li>TaskTop mirrors the hierarchy into Planview in real time — a Jira <b>Program becomes a Planview Project</b>, and an <b>Epic becomes a Phase</b>.</li>
+        <li>Each day the agent reads which stories are open per assignee, and which Program/Phase they roll up to.</li>
+        <li><b>8 hours is split proportionally</b> across a person's open stories' parent Programs — 2 open stories under 2 Programs means 4 hrs logged to each.</li>
+        <li>Hours post automatically to each assignee's Planview timesheet — no manual entry required.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Tech stack</h3>
+      <div class="stack-pills">
+        <span class="pill">🗂️ Jira</span>
+        <span class="pill">🔁 TaskTop</span>
+        <span class="pill">📋 Planview AgilePlace</span>
+        <span class="pill">⚙️ Hierarchy mapping</span>
+        <span class="pill">🕒 Daily time post</span>
+      </div>
+      <h3 style="margin-top:24px;">What makes it distinctive</h3>
+      <ul>
+        <li>Timesheet accuracy stops depending on people remembering to log hours at all.</li>
+        <li>Time reflects <b>actual delivery status</b> in Jira — not a guess reconstructed at week's end.</li>
+        <li>TaskTop keeps Jira and Planview in sync automatically, so the two systems never drift apart.</li>
+        <li>Finance/PMO get consistent, hierarchy-accurate project hours daily — not just at month-end.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============ INTERACTIVE DEMO ============ -->
+  <div class="demo-section">
+    <p class="demo-label">// interactive demo — watch a day's timesheet log itself</p>
+
+    <div style="margin-top:16px;">
+      <button class="btn btn-primary" id="runBtn" onclick="runDemo()">Run demo</button>
+      <button class="btn btn-ghost" id="resetBtn" onclick="resetDemo()">Restart</button>
+    </div>
+
+    <div class="window">
+      <div class="titlebar">
+        <div class="dots"><span class="d1"></span><span class="d2"></span><span class="d3"></span></div>
+        <div class="name">tasktop — timesheet sync agent</div>
+        <div class="live">Live simulation</div>
+      </div>
+
+      <div class="stage">
+        <div class="sync-row">
+
+          <!-- LEFT: Jira board -->
+          <div class="board">
+            <div class="board-label">Jira — source board</div>
+            <div class="hier" id="jiraHier">
+              <div class="lvl1" id="j-p1">Program: Falcon Initiative</div>
+              <div class="lvl2" id="j-e1">Epic: Mobile Checkout</div>
+              <div class="lvl3" id="j-s1"><span class="dot"></span> Story-4821 · In Progress <span class="assignee">Mary</span></div>
+
+              <div class="lvl1" id="j-p2" style="margin-top:14px;">Program: Osprey Rollout</div>
+              <div class="lvl2" id="j-e2">Epic: Data Migration</div>
+              <div class="lvl3" id="j-s2"><span class="dot"></span> Story-5190 · In Progress <span class="assignee">Mary</span></div>
+            </div>
+          </div>
+
+          <!-- MIDDLE: sync arrow -->
+          <div class="sync-arrow" id="syncArrow">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+              <path d="M4 12h13M13 6l6 6-6 6" stroke="#FF93AC" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="lbl">TaskTop<br>syncing…</span>
+          </div>
+
+          <!-- RIGHT: Planview mirror board -->
+          <div class="board">
+            <div class="board-label">Planview AgilePlace — mirror</div>
+            <div class="hier" id="pvHier">
+              <div class="lvl1" id="p-p1">Project: Falcon Initiative</div>
+              <div class="lvl2" id="p-e1">Phase: Mobile Checkout</div>
+              <div class="lvl3" id="p-s1"><span class="dot"></span> Card-4821 · In Progress <span class="assignee">Mary</span></div>
+
+              <div class="lvl1" id="p-p2" style="margin-top:14px;">Project: Osprey Rollout</div>
+              <div class="lvl2" id="p-e2">Phase: Data Migration</div>
+              <div class="lvl3" id="p-s2"><span class="dot"></span> Card-5190 · In Progress <span class="assignee">Mary</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Allocation math -->
+        <div class="alloc" id="allocBlock">
+          <div class="alloc-title">Daily allocation — Mary · 8.0 hrs capacity ÷ 2 open stories</div>
+          <div class="alloc-bars">
+            <div class="alloc-card">
+              <div class="proj">Falcon Initiative</div>
+              <div class="hrs" id="hrsA">0.0 hrs</div>
+              <div class="bar-track"><div class="bar-fill" id="barA"></div></div>
+            </div>
+            <div class="alloc-card">
+              <div class="proj">Osprey Rollout</div>
+              <div class="hrs" id="hrsB">0.0 hrs</div>
+              <div class="bar-track"><div class="bar-fill" id="barB"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Output timesheet -->
+        <div class="output" id="outputBlock">
+          <div class="output-head">
+            <div class="fname mono">Planview timesheet — Mary — Aug 14, 2026</div>
+            <div class="posted" id="postedTag">✓ posted automatically</div>
+          </div>
+          <table>
+            <thead>
+              <tr><th>Project</th><th>Phase</th><th>Source story</th><th>Hours</th></tr>
+            </thead>
+            <tbody>
+              <tr class="new-row" id="row1"><td>Falcon Initiative</td><td>Mobile Checkout</td><td class="mono">Story-4821</td><td class="num">4.0</td></tr>
+              <tr class="new-row" id="row2"><td>Osprey Rollout</td><td>Data Migration</td><td class="mono">Story-5190</td><td class="num">4.0</td></tr>
+              <tr class="new-row" id="rowT"><td><b>Total</b></td><td></td><td></td><td class="num"><b>8.0</b></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>built with TaskTop · Jira · Planview AgilePlace · portfolio demo</footer>
+</div>
+
+<script>
+  /* ============================================================
+     DEMO ANIMATION LOGIC (unchanged from v1 — theme-only update)
+     ------------------------------------------------------------
+     Reveals page elements one at a time by toggling a "show" CSS
+     class, with short pauses between steps so it reads as a live
+     sequence rather than everything appearing at once.
+     ============================================================ */
+  function sleep(ms){ return new Promise(resolve => setTimeout(resolve, ms)); }
+  function $(id){ return document.getElementById(id); }
+  function reveal(id){ $(id).classList.add('show'); }
+  function hide(id){ $(id).classList.remove('show'); }
+  const runBtn = () => $('runBtn');
+
+  async function runDemo(){
+    runBtn().disabled = true;
+    resetDemo(false);
+
+    reveal('j-p1'); await sleep(250);
+    reveal('j-e1'); await sleep(200);
+    reveal('j-s1'); await sleep(350);
+    reveal('j-p2'); await sleep(250);
+    reveal('j-e2'); await sleep(200);
+    reveal('j-s2'); await sleep(500);
+
+    $('syncArrow').classList.add('active');
+    await sleep(700);
+
+    reveal('p-p1'); await sleep(250);
+    reveal('p-e1'); await sleep(200);
+    reveal('p-s1'); await sleep(350);
+    reveal('p-p2'); await sleep(250);
+    reveal('p-e2'); await sleep(200);
+    reveal('p-s2'); await sleep(500);
+
+    reveal('allocBlock');
+    await sleep(300);
+    $('hrsA').textContent = '4.0 hrs';
+    $('hrsB').textContent = '4.0 hrs';
+    $('barA').style.width = '50%';
+    $('barB').style.width = '50%';
+    await sleep(900);
+
+    reveal('outputBlock');
+    await sleep(300);
+    reveal('row1'); await sleep(250);
+    reveal('row2'); await sleep(250);
+    reveal('rowT'); await sleep(250);
+    reveal('postedTag');
+
+    runBtn().disabled = false;
+  }
+
+  function resetDemo(reenable = true){
+    ['j-p1','j-e1','j-s1','j-p2','j-e2','j-s2',
+     'p-p1','p-e1','p-s1','p-p2','p-e2','p-s2',
+     'allocBlock','outputBlock','row1','row2','rowT','postedTag']
+      .forEach(hide);
+    $('syncArrow').classList.remove('active');
+    $('hrsA').textContent = '0.0 hrs';
+    $('hrsB').textContent = '0.0 hrs';
+    $('barA').style.width = '0%';
+    $('barB').style.width = '0%';
+    if (reenable) runBtn().disabled = false;
+  }
+</script>
+</body>
+</html>
