@@ -36,21 +36,25 @@
      PAGE THEME TOKENS (unchanged from v2 — sky blue / navy / pink)
      ============================================================ */
   :root{
-    --bg:         #52C2F0;
-    --navy:       #133A5C;
-    --navy-soft:  #2C5578;
-    --pink:       #FF93AC;
-    --card-bg:    #DFF3FD;
-    --card-border:#AEE1F7;
-    --pill-bg:    #F4FBFF;
+    /* ---- Page theme: dark green + orange (was sky blue/navy/pink) ---- */
+    --bg:         #131f19;
+    --navy:       #f2ede1;   /* now the LIGHT text color, kept the name so refs below still work */
+    --navy-soft:  #c3d0c7;   /* secondary/muted text */
+    --pink:       #e08a34;   /* now the orange accent, kept the name so refs below still work */
+    --card-bg:    #1b2b23;
+    --card-border:#33503f;
+    --pill-bg:    #22362c;
     --white:      #FFFFFF;
     --good:       #2FAE6B;
     --radius-lg:  16px;
     --radius-sm:  8px;
 
-    /* ---- mockup-only colors: these imitate each real tool's own
-       palette, not the page theme, so the mini boards read as
-       "screenshots" rather than reskinned theme boxes. ---- */
+    /* ---- mockup-only colors: LEFT UNCHANGED ON PURPOSE ----
+       these imitate each real tool's own palette (Jira, Planview
+       AgilePlace, Planview timesheet grid), not the page theme, so
+       the mini boards still read as authentic screenshots rather
+       than reskinned theme boxes. Recoloring these would break the
+       "this looks like the real tool" effect the mockups rely on. ---- */
     --jira-purple:  #6554C0;
     --jira-blue:    #0052CC;
     --jira-border:  #DFE1E6;
@@ -120,7 +124,7 @@
   .titlebar{ display:flex; align-items:center; gap:10px; background: var(--pill-bg); border-bottom:1.5px solid var(--card-border); padding:12px 16px; }
   .dots{ display:flex; gap:6px; }
   .dots span{ width:10px; height:10px; border-radius:50%; display:block; }
-  .dots .d1{ background:#FF8A8A; } .dots .d2{ background:#FFD778; } .dots .d3{ background:#7BE0A6; }
+  .dots .d1{ background:#e2938c; } .dots .d2{ background:#eec87c; } .dots .d3{ background:#9ad4b0; }
   .titlebar .name{ font-family:'Poppins', monospace; font-size:12.5px; color: var(--navy-soft); }
   .titlebar .live{ margin-left:auto; font-family:'Poppins', monospace; font-size:11px; font-weight:600; background: var(--pink); color:#5C1626; padding:4px 12px; border-radius:999px; }
 
@@ -189,7 +193,7 @@
      ALLOCATION CALCULATION STRIP
      ============================================================ */
   .calc-strip{
-    background: var(--white); border:1.5px solid var(--card-border); border-radius: var(--radius-sm);
+    background: var(--card-bg); border:1.5px solid var(--card-border); border-radius: var(--radius-sm);
     padding:16px 18px; display:flex; align-items:center; gap:18px; flex-wrap:wrap;
   }
   .calc-piece{ text-align:center; }
@@ -241,36 +245,6 @@
     <span class="pill">Planview AgilePlace</span>
     <span class="pill">Proportional allocation</span>
     <span class="pill">Auto timesheet post</span>
-  </div>
-
-  <div class="grid2">
-    <div class="card">
-      <h3>How it works</h3>
-      <ul>
-        <li>Story, Epic, and Program cards are created and maintained in Jira as the normal source of truth.</li>
-        <li>TaskTop mirrors the hierarchy into Planview in real time — a Jira <b>Program becomes a Planview Project</b>, and an <b>Epic becomes a Phase</b>.</li>
-        <li>Each day, TaskTop reads how many cards are open per assignee, and which Program/Phase each rolls up to.</li>
-        <li><b>8 hours is split evenly</b> across a person's open cards' parent Programs — 2 open cards under 2 Programs means 4 hrs logged to each.</li>
-        <li>Hours post automatically to each assignee's Planview timesheet — no manual entry required.</li>
-      </ul>
-    </div>
-    <div class="card">
-      <h3>Tech stack</h3>
-      <div class="stack-pills">
-        <span class="pill">🗂️ Jira</span>
-        <span class="pill">🔁 TaskTop</span>
-        <span class="pill">📋 Planview AgilePlace</span>
-        <span class="pill">⚙️ Hierarchy mapping</span>
-        <span class="pill">🕒 Daily time post</span>
-      </div>
-      <h3 style="margin-top:24px;">What makes it distinctive</h3>
-      <ul>
-        <li>Timesheet accuracy stops depending on people remembering to log hours at all.</li>
-        <li>Time reflects <b>actual delivery status</b> in Jira — not a guess reconstructed at week's end.</li>
-        <li>TaskTop keeps Jira and Planview in sync automatically, so the two systems never drift apart.</li>
-        <li>Finance/PMO get consistent, hierarchy-accurate project hours daily — not just at month-end.</li>
-      </ul>
-    </div>
   </div>
 
   <!-- ============ INTERACTIVE DEMO ============ -->
@@ -371,6 +345,36 @@
         </div>
 
       </div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>How it works</h3>
+      <ul>
+        <li>Story, Epic, and Program cards are created and maintained in Jira as the normal source of truth.</li>
+        <li>TaskTop mirrors the hierarchy into Planview in real time — a Jira <b>Program becomes a Planview Project</b>, and an <b>Epic becomes a Phase</b>.</li>
+        <li>Each day, TaskTop reads how many cards are open per assignee, and which Program/Phase each rolls up to.</li>
+        <li><b>8 hours is split evenly</b> across a person's open cards' parent Programs — 2 open cards under 2 Programs means 4 hrs logged to each.</li>
+        <li>Hours post automatically to each assignee's Planview timesheet — no manual entry required.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Tech stack</h3>
+      <div class="stack-pills">
+        <span class="pill">🗂️ Jira</span>
+        <span class="pill">🔁 TaskTop</span>
+        <span class="pill">📋 Planview AgilePlace</span>
+        <span class="pill">⚙️ Hierarchy mapping</span>
+        <span class="pill">🕒 Daily time post</span>
+      </div>
+      <h3 style="margin-top:24px;">What makes it distinctive</h3>
+      <ul>
+        <li>Timesheet accuracy stops depending on people remembering to log hours at all.</li>
+        <li>Time reflects <b>actual delivery status</b> in Jira — not a guess reconstructed at week's end.</li>
+        <li>TaskTop keeps Jira and Planview in sync automatically, so the two systems never drift apart.</li>
+        <li>Finance/PMO get consistent, hierarchy-accurate project hours daily — not just at month-end.</li>
+      </ul>
     </div>
   </div>
 
